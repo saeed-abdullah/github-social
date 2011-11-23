@@ -71,13 +71,15 @@ def get_all_issues(repo, github):
     issues = github.issues.list(repo, state="open")
 
     return issues.extend(github.issues.list(repo, state ="closed"))
-
     
 
 
-def get_issues_interaction(repos, github):
+def get_issues_interaction(repo, github):
     """
     Returns interaction between users resulting from issues.
+
+    Interaction, here, is a chronological list of users commenting on a 
+    particular issues
 
     params:
     ----
@@ -85,27 +87,20 @@ def get_issues_interaction(repos, github):
     github: Github client object.
 
     returns:
-    A list containing repo-name and list of interaction where in each list
-    there is communication from i+1-th to i-th person.
+    ----
+    A list containing list of interactions per issues.
     """
 
-    network = []
-    for repo in repos:
-        repo_network = []
-        issues = get_all_issues(repo, github)
+    repo_network = []
+    issues = get_all_issues(repo, github)
 
 
-        for issue in issues:
-            if issue.comment > 0:
-                interaction = [issue.user]
-                comments = github.issues.comments(repo, issue.number)
+    for issue in issues:
+        if issue.comment > 0:
+            interaction = [issue.user]
+            comments = github.issues.comments(repo, issue.number)
 
-                for comment in comments:
-                    interaction.append(comment.user)
+            for comment in comments:
+                interaction.append(comment.user)
 
-                repo_network.append(interaction)
-
-        network.append((repo, repo_network))
-
-    return network
-
+            repo_network.append(interaction)
