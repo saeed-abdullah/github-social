@@ -63,6 +63,18 @@ def get_most_watched_repos(language, count=1):
 
     return repos
 
+def get_all_issues(repo, github):
+    """
+    Returns all issues --- both closed and open.
+    """
+
+    issues = github.issues.list(repo, state="open")
+
+    return issues.extend(github.issues.list(repo, state ="closed"))
+
+    
+
+
 def get_issues_interaction(repos, github):
     """
     Returns interaction between users resulting from issues.
