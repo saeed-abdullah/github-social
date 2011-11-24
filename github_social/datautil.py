@@ -70,7 +70,9 @@ def get_all_issues(repo, github):
 
     issues = github.issues.list(repo, state="open")
 
-    return issues.extend(github.issues.list(repo, state ="closed"))
+    issues.extend(github.issues.list(repo, state ="closed"))
+
+    return issues
     
 
 
