@@ -106,3 +106,5 @@ def get_issues_interaction(repo, github):
                 interaction.append(comment.user)
 
             repo_network.append(interaction)
+
+    return repo_network
