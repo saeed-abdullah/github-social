@@ -98,7 +98,7 @@ def get_issues_interaction(repo, github):
 
 
     for issue in issues:
-        if issue.comment > 0:
+        if issue.comments > 0:
             interaction = [issue.user]
             comments = github.issues.comments(repo, issue.number)
 
