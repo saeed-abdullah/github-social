@@ -54,7 +54,7 @@ def get_most_watched_repos(language, count=1):
     repos = []
 
     base_url = "https://github.com/languages/" + language + \
-        "most_watched?page={0}"
+        "/most_watched?page={0}"
 
     for page in range(0, count):
         url = base_url.format(page + 1)
