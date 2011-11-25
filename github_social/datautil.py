@@ -150,4 +150,34 @@ def get_next_page_url(header):
     else:
         return raw_next[1][1:-1]
 
+def ruby_repo_issues(repo, state):
+    """Retrieves issues from ruby repos.
+
+    Most of the ruby repos have too many issues which
+    causes API V2 to throw 500 errors. To avoid that
+    this method introduces API V3 for retrieving issues.
+
+    param:
+    ----
+    repo: Name of the repo
+    state: closed or open --- type of issues to be retrieved.
+    """
+
+    issues = []
+    base_url = "https://api.github.com/repos/rails/rails/issues?" +\
+    "per_pag=100&page={0}&state="+state
+
+    next_url = base_url.format(1)
+
+    while next_url:
+        f = urllib.urlopen(next_url)
+        response = ""
+        for line in f:
+            response += line
+
+        issues.append(response)
+
+        next_url = get_next_page_url(f.headers)
+
+    return issues
 
