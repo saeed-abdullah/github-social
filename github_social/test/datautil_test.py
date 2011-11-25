@@ -57,3 +57,35 @@ def test_get_next_page_url():
     
     assert datautil.get_next_page_url(headers) is None
 
+def test_ruby_repo_issues():
+    repo = "rails/rails"
+    state = "closed"
+
+
+    import json
+    from github2.issues import Issue
+
+    li = datautil.ruby_repo_issues(repo, state)
+    json_issues = json.loads(li[-1])
+    issues = [Issue(**dict((str(k), v) for (k, v) in value.iteritems()))
+                    for value in json_issues]
+
+
+    assert issues[-1].id == 132
+
+    #json_issues = json.loads(li[0])
+    #issues = [Issue(**dict((str(k), v) for (k, v) in value.iteritems()))
+                    #for value in json_issues]
+
+
+    #assert issues[0].id == 2351068
+
+    repo = "ask/python-github2"
+    li = datautil.ruby_repo_issues(repo, state)
+    json_issues = json.loads(li[-1])
+    issues = [Issue(**dict((str(k), v) for (k, v) in value.iteritems()))
+                    for value in json_issues]
+
+    assert issues[-1].id == 3081
+
+
