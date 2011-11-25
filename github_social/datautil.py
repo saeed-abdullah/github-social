@@ -173,10 +173,10 @@ def ruby_repo_issues(repo, state):
     """
 
     issues = []
-    base_url = "https://api.github.com/repos/rails/rails/issues?" +\
-    "per_pag=100&page={0}&state="+state
+    base_url = "https://api.github.com/repos/{0}/issues?" +\
+    "per_page=100&page={1}&state="+state
 
-    next_url = base_url.format(1)
+    next_url = base_url.format(repo, "1")
 
     while next_url:
         f = urllib.urlopen(next_url)
