@@ -108,3 +108,46 @@ def get_issues_interaction(repo, github):
             repo_network.append(interaction)
 
     return repo_network
+
+
+def get_next_page_url(header):
+    """Returns next page url.
+    From the header of the requests, it retrieves
+    next page url. For more information,
+    see: http://developer.github.com/v3/#pagination
+
+    param
+    ----
+    header: Returned http headers.
+
+    return
+    ----
+    The next page url if presented, or None.
+
+    exception
+    ----
+    Throws ValueError if rate limit is exceeded, check
+    http://developer.github.com/v3/#rate-limiting
+    """
+
+    if int(header['x-ratelimit-remaining']) <= 0:
+        raise ValueError("Rate limit remaining:" +\
+                header['x-ratelimit-remaining'])
+
+    links = [x.strip() for x in header['link'].split(",")]
+    raw_next = None
+
+    for link in links:
+        if link.find('rel="next"') > 0:
+            raw_next = [x.strip() for x in link.split(";")]
+            break
+
+    if raw_next is None:
+        return None
+    elif raw_next[0][0] == "<":
+        # The link starts with < and ends with >
+        return raw_next[0][1:-1]
+    else:
+        return raw_next[1][1:-1]
+
+
