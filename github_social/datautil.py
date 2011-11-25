@@ -75,6 +75,23 @@ def get_all_issues(repo, github):
     return issues
     
 
+def parse_interaction_from_issues(issues):
+    """Parses interaction from list of issues."""
+    repo_network = []
+
+    for issue in issues:
+        if issue.comments > 0:
+            interaction = [issue.user]
+            comments = github.issues.comments(repo, issue.number)
+
+            for comment in comments:
+                interaction.append(comment.user)
+
+            repo_network.append(interaction)
+
+    return repo_network
+
+
 
 def get_issues_interaction(repo, github):
     """
@@ -93,21 +110,10 @@ def get_issues_interaction(repo, github):
     A list containing list of interactions per issues.
     """
 
-    repo_network = []
     issues = get_all_issues(repo, github)
 
 
-    for issue in issues:
-        if issue.comments > 0:
-            interaction = [issue.user]
-            comments = github.issues.comments(repo, issue.number)
-
-            for comment in comments:
-                interaction.append(comment.user)
-
-            repo_network.append(interaction)
-
-    return repo_network
+    return parse_interaction_from_issues(issues)
 
 
 def get_next_page_url(header):
