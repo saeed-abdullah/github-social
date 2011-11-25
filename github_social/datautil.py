@@ -140,6 +140,9 @@ def get_next_page_url(header):
         raise ValueError("Rate limit remaining:" +\
                 header['x-ratelimit-remaining'])
 
+    if 'link' not in header:
+        return None
+
     links = [x.strip() for x in header['link'].split(",")]
     raw_next = None
 
