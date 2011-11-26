@@ -33,3 +33,9 @@ def create_issues_interaction_network(interactions):
 
     return G
 
+
+def remove_self_loop(graph):
+    """Removes self-loops in-place."""
+    for node in graph.nodes_iter():
+        if graph.has_edge(node, node):
+            graph.remove_edge(node, node)
