@@ -75,7 +75,7 @@ def get_all_issues(repo, github):
     return issues
     
 
-def parse_interaction_from_issues(github, issues):
+def parse_interaction_from_issues(github, issues, repo):
     """Parses interaction from list of issues."""
     repo_network = []
 
@@ -113,7 +113,7 @@ def get_issues_interaction(repo, github):
     issues = get_all_issues(repo, github)
 
 
-    return parse_interaction_from_issues(github, issues)
+    return parse_interaction_from_issues(github, issues, repo)
 
 
 def get_next_page_url(header):
