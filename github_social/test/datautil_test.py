@@ -1,4 +1,15 @@
 from .. import datautil
+from github2.client import Github
+
+github = None
+
+def get_github_client():
+    global github
+
+    if github is None:
+        github = Github(requests_per_second = 1)
+
+    return github
 
 def test_parse_repo_from_html():
     data = """
