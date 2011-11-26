@@ -190,3 +190,145 @@ def ruby_repo_issues(repo, state):
 
     return issues
 
+def ruby_issues_json_dump(repo, out):
+    """Retrieves json issues from github.
+
+    It gets json data and saves to disk which is later read by
+    ruby_issues_json_load later.
+
+    param
+    ----
+    repo: Name of the repo.
+    out: Path of the file to write data
+    """
+
+    issues_open = ruby_repo_issues(repo, "open")
+    issues_closed = ruby_repo_issues(repo, "closed")
+
+
+    with open(out, "w") as f:
+        pickle.dump([issues_open, issues_closed], f)
+
+def ruby_issues_json_load(in_file):
+    """Reads Issues from json data.
+
+    It reads the json data written by ruby_issues_json_dump
+    and convert to a list of Issue from github2.issues
+
+    The json data is written to disk in the following format:
+    [list_of_open_issues, list_of_closed_issues], where each
+    element of the inside list is a string representing a page.
+
+    param
+    ----
+    in_file: Location of the file containing json data.
+
+    """
+    repo_issues = []
+    from github2.issues import Issue
+
+    with open(in_file) as f:
+        pickle_list = pickle.load(f)
+
+    for state in pickle_list:
+        for page in state:
+            json_issues = json.loads(page)
+            issues = [Issue(**dict((str(k), v) for (k, v) in value.iteritems()))
+                for value in json_issues]
+            repo_issues.extend(issues)
+
+    return repo_issues
+
+def parse_interaction_from_ruby_issues(github, issues, repo):
+    """Parses interaction from list of issues."""
+    repo_network = []
+
+    for issue in issues:
+        if issue.comments > 0:
+            interaction = [issue.user["login"]]
+            comments = github.issues.comments(repo, issue.number)
+
+            for comment in comments:
+                interaction.append(comment.user)
+
+            repo_network.append(interaction)
+
+    return repo_network
+
+
+
+def ruby_issue_json_fetch(in_file, json_file):
+    """Fetches issues from ruby repo.
+    It fetches raw json data from github repo
+    by using API V3 then writes it to the disk.
+
+    param
+    ----
+    in_file: Template of filename containing repo names.
+    json_file: Template of filename containing raw json list of issues.
+    Here is the example of each filename:
+
+    in_file = "../data/most_watched/{0}.txt"
+    json_file = "../data/network/issues/{0}/json/{1}.json"
+    """
+
+    languages = ['ruby']
+
+    for lang in languages:
+        with open(in_file.format(lang), "r") as f:
+
+            for line in f:
+                repo = line.strip()
+                f_name = repo.replace('/', '_')
+                print "Starting {0} at {1}".format(repo, json_file.format(lang, f_name))
+                ruby_issues_json_dump(repo, json_file.format(lang, f_name))
+
+     
+def ruby_issue_json_read(in_file, json_file, out_file):
+    """Creates issues network for ruby repo.
+    
+    It reads raw json file listing issues for a particular repo and then
+    fetches comments to build a social network.
+
+    param
+    ----
+    in_file: Template of filename containing repo names.
+    json_file: Template of filename containing raw json list of issues.
+    out_file: Template of filename to which the resultant graph will be
+        written.
+
+    Here is the example of each filename:
+
+    in_file = "../data/most_watched/{0}.txt"
+    out_file = "../data/network/issues/{0}/{1}.txt"
+    json_file = "../data/network/issues/{0}/json/{1}.json"
+    """
+
+    languages = ['ruby']
+
+    from github2.client import Github
+    github = Github(requests_per_second=1)
+
+
+    for lang in languages:
+        with open(in_file.format(lang), "r") as f:
+
+            for line in f:
+                repo = line.strip()
+                f_name = repo.replace('/', '_')
+                print "Starting {0} at {1}".format(repo, out_file.format(lang, f_name))
+                issues = ruby_issues_json_load(json_file.format(lang, f_name))
+                interactions = parse_interaction_from_ruby_issues(github,
+                        issues, repo)
+
+
+                graph = networkutil.create_issues_interaction_network(
+                        interactions)
+
+                nx.write_adjlist(graph, out_file.format(lang, f_name))
+
+
+
+     
+
+
