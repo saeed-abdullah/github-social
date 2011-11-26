@@ -284,7 +284,7 @@ def ruby_issue_json_fetch(in_file, json_file):
                 ruby_issues_json_dump(repo, json_file.format(lang, f_name))
 
      
-def ruby_issue_json_read(in_file, json_file, out_file):
+def ruby_issue_json_read(in_file, json_file, out_file, github):
     """Creates issues network for ruby repo.
     
     It reads raw json file listing issues for a particular repo and then
@@ -305,9 +305,6 @@ def ruby_issue_json_read(in_file, json_file, out_file):
     """
 
     languages = ['ruby']
-
-    from github2.client import Github
-    github = Github(requests_per_second=1)
 
 
     for lang in languages:
