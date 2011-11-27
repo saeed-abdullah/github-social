@@ -325,7 +325,53 @@ def ruby_issue_json_read(in_file, json_file, out_file, github):
                 nx.write_adjlist(graph, out_file.format(lang, f_name))
 
 
+def get_repo_default_branch(repo, github):
+    """Returns default branch of the repo."""
 
-     
+    branch = github.repos.show(repo).master_branch
+    return branch if branch else "master"
 
+def get_file_list(repo, branch, github):
+    """Returns all the blobs from the HEAD commit."""
+
+    commits = github.commits.list(repo, branch)
+    tree = commits[0].tree
+
+    return github.get_all_blobs(repo, tree).keys()
+
+def get_all_commits(files, repo, branch, github):
+    """Returns commits done on the given files.
+
+    param
+    ----
+    files: List of files (blobs).
+    repo: Name of the repo.
+    branch: Branch of the repo.
+    github: Github client.
+
+    returns
+    ----
+    List of tuples whose first element is the name of the
+        blob and second element is a list containing all the
+        commits done on it.
+    """
+    
+    li = []
+    for f in files:
+        li.append((f,
+            github.commits.list(repo, branch, file=f)))
+
+    return li
+
+def parse_commit_interactions(commits):
+    """Parses interaction from commits.
+    Interactions are returned as a chronological list of commit
+    author (most recent being the first one).
+    """
+
+    li = []
+    for commit in commits:
+        li.append(commit.author['login'])
+
+    return li
 

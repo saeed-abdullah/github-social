@@ -100,3 +100,44 @@ def test_ruby_repo_issues():
     assert issues[-1].id == 3081
 
 
+def get_repo_default_branch_test():
+    github = get_github_client()
+
+    repo = "schacon/grit"
+    assert "master" == datautil.get_repo_default_branch(repo, github)
+
+def get_file_list_test():
+    github = get_github_client()
+    repo = "octocat/Spoon-Knife"
+    expected = ["README", "forkit.gif", "index.html"]
+    actual = datautil.get_file_list(repo, "master", github)
+    assert set(expected) == set(actual)
+
+def get_all_commits_and_parse_test():
+    github = get_github_client()
+    repo = "octocat/Spoon-Knife"
+    files = ["README", "forkit.gif", "index.html"]
+
+    expected = [['zhuowei', 'invalid-email-address', 'invalid-email-address',
+                'dave1010', 'invalid-email-address'],
+            ['invalid-email-address','invalid-email-address',
+                'invalid-email-address'],
+            ['invalid-email-address']]
+
+    actual = datautil.get_all_commits(files, repo, "master", github)
+
+
+    for x in actual:
+        actual_interaction = datautil.parse_commit_interactions(x[1])
+
+        if x[0] == files[0]:
+            assert len(x[1]) == 3
+            assert actual_interaction == expected[1]
+
+        elif x[0] == files[1]:
+            assert len(x[1]) == 1
+            assert actual_interaction == expected[2]
+        else:
+            assert len(x[1]) == 5
+            assert actual_interaction == expected[0]
+
