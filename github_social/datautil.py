@@ -319,7 +319,7 @@ def ruby_issue_json_read(in_file, json_file, out_file, github):
                         issues, repo)
 
 
-                graph = networkutil.create_issues_interaction_network(
+                graph = networkutil.create_interaction_network(
                         interactions)
 
                 nx.write_adjlist(graph, out_file.format(lang, f_name))

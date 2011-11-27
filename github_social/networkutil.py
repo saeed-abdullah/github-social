@@ -6,7 +6,7 @@ Miscellaneous network utility code.
 import datautil
 import networkx as nx
 
-def create_issues_interaction_network(interactions):
+def create_interaction_network(interactions, **kargs):
     """
     Creates an interaction network from issues.
 
@@ -25,7 +25,7 @@ def create_issues_interaction_network(interactions):
     The graph
     """
 
-    G = nx.DiGraph()
+    G = nx.DiGraph(**kargs)
 
     for interaction in interactions:
         # We need to reverse the list

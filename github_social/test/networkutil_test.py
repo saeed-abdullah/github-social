@@ -2,10 +2,10 @@ from .. import networkutil
 
 import networkx as nx
 
-def test_create_issues_interaction_network():
+def test_create_interaction_network():
     interactions = [[x for x in range(0, y)] for y in range(2, 5)]
 
-    G = networkutil.create_issues_interaction_network(interactions)
+    G = networkutil.create_interaction_network(interactions)
 
     for interaction in interactions:
         for x in range(len(interaction) - 1, 0, -1):

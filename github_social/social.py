@@ -20,7 +20,8 @@ def issues_network(out, repo, github):
 
     interactions = datautil.get_issues_interaction(repo, github)
 
-    graph = networkutil.create_issues_interaction_network(interactions)
+    graph = networkutil.create_interaction_network(interactions,
+            repo_name=repo)
 
     nx.write_adjlist(graph, out)
 
