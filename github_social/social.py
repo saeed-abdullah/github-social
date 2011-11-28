@@ -120,4 +120,72 @@ def commit_networks(in_pattern, out_dir, languages):
                 nx.write_adjlist(g, graph_out.format(lang, f_name))
 
 
+def read_repos_from_file(filename):
+    """Retrieves repos from the file."""
+    repos = []
+    with open(filename, "r") as f:
+        for line in f:
+            repos.append(line.strip())
+
+    return repos
+
+
+def repo_property(repo_file_names, in_pattern):
+    """Calculates network property of repos.
+
+    param
+    ----
+    repo_file_names: List of file names of repo (/ replaced to _).
+    in_pattern: Location of adjacency list formatted graph.
+
+    return
+    ----
+    List of tuples (richness, triangles, transitivity).
+
+    Example of in_pattern:
+    graph_dir = "../data/network/issues/python/{0}.txt"
+    """
+
+    property_list = []
+
+    for repo in repo_file_names:
+        print repo
+        graph = nx.read_adjlist(in_pattern.format(repo))
+        p = networkutil.get_network_property(graph)
+
+        property_list.append(p)
+
+    return property_list
+
+
+def get_language_property(repo_dir, graph_dir, out_dir, langs):
+    """Retrieves network property for repos for given languages.
+
+    It writes all the property to the disk.
+
+    param
+    ----
+    repo_dir: Pattern of most-watched repo list file.
+    graph_dir: Pattern of graph files for repos.
+    out_dir: Patter of output directory.
+    langs: List of languages.
+
+    For Example:
+    repo_dir = "../data/most_watched/{0}.txt"
+    graph_dir = "../data/network/issues/{0}/"
+    out_dir = "../data/network/issues/{0}/network_property.pickle"
+
+    lang = ['ruby', 'javascript']
+
+    """
+
+    for lang in langs:
+        repos = read_repos_from_file(repo_dir.format(lang))
+        repo_file_names = [x.replace("/", "_") for x in repos]
+
+        p = repo_property(repo_file_names, graph_dir.format(lang) + "{0}.txt")
+
+        with open(out_dir.format(lang), "w") as f:
+            pickle.dump(p, f)
+
 
