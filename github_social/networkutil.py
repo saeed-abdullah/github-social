@@ -41,9 +41,31 @@ def remove_self_loop(graph):
             graph.remove_edge(node, node)
 
 def get_network_property(graph):
+    """Returns various property of the graph.
+
+    It calculates the richness coefficient, triangles and transitivity
+    coefficient. To do so, it removes self-loops *in-place*. So, there
+    is a possibility that the graph passed as parameter has been
+    changed.
+    """
+
     remove_self_loop(graph)
 
-    richness = nx.rich_club_coefficient(graph)
+    # If number of nodes is less than three
+    # no point in calculating these property.
+    if len(graph.nodes()) < 3:
+        return ({0: 0.0}, 0, 0)
+
+    try:
+        richness = nx.rich_club_coefficient(graph)
+    except nx.NetworkXAlgorithmError:
+        # NetworkXAlgorithmError is raised when
+        # it fails achieve desired swaps after
+        # maximum number of attempts. It happened
+        # for a really small graph. But, just to
+        # guard against those cases.
+        richness = nx.rich_club_coefficient(graph, False)
+
     triangle = nx.triangles(graph)
     transitivity = nx.transitivity(graph)
 
