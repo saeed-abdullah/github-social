@@ -39,3 +39,14 @@ def remove_self_loop(graph):
     for node in graph.nodes_iter():
         if graph.has_edge(node, node):
             graph.remove_edge(node, node)
+
+def get_network_property(graph):
+    remove_self_loop(graph)
+
+    richness = nx.rich_club_coefficient(graph)
+    triangle = nx.triangles(graph)
+    transitivity = nx.transitivity(graph)
+
+    return (richness, triangle, transitivity)
+
+

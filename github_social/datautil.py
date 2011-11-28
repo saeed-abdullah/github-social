@@ -358,8 +358,11 @@ def get_all_commits(files, repo, branch, github):
     
     li = []
     for f in files:
-        li.append((f,
-            github.commits.list(repo, branch, file=f)))
+        try:
+            li.append((f, github.commits.list(repo, branch, file=f)))
+        except UnicodeDecodeError:
+            print "Unicode Error for file {0} in repo {1} branch {2}".format(f,
+                    repo, branch)
 
     return li
 
